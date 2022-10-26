@@ -5,7 +5,9 @@ using System;
 
 public class MoveAction : BaseAction
 {
-  [SerializeField] private Animator unitAnimator;
+  public event EventHandler OnStartMoving;
+  public event EventHandler OnStopMoving;
+
   [SerializeField] private int maxMoveDistance = 4;
   private Vector3 targetPosition;
   private int moveSpeed = 4;
@@ -33,10 +35,8 @@ public class MoveAction : BaseAction
     }
     else
     {
-      // Not moving; play idle animation
-      unitAnimator.SetBool("IsWalking", false);
-
       ActionComplete();
+      OnStopMoving?.Invoke(this, EventArgs.Empty);
     }
   }
 
@@ -49,9 +49,6 @@ public class MoveAction : BaseAction
     // Rotate to face target smoothly
     float rotateSpeed = 10f;
     transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotateSpeed * Time.deltaTime);
-
-    // Play walking animation
-    unitAnimator.SetBool("IsWalking", true);
   }
 
   public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
@@ -59,6 +56,8 @@ public class MoveAction : BaseAction
     ActionStart(onActionComplete);
 
     this.targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
+
+    OnStartMoving?.Invoke(this, EventArgs.Empty);
   }
 
   public override List<GridPosition> GetValidActionGridPositionList()

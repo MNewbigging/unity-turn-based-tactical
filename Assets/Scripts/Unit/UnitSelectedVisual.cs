@@ -31,4 +31,9 @@ public class UnitSelectedVisual : MonoBehaviour
     // Show or hide this object based on if unit selected is this one 
     meshRenderer.enabled = UnitActionSystem.Instance.GetSelectedUnit() == unit;
   }
+
+  private void OnDestroy()
+  {
+    UnitActionSystem.Instance.OnSelectedUnitChanged -= OnSelectUnit;
+  }
 }

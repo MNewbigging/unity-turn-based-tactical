@@ -84,7 +84,7 @@ public class ShootAction : BaseAction
 
   private void Shoot()
   {
-    targetUnit.Damage();
+    targetUnit.Damage(40);
 
     OnShoot?.Invoke(this, new OnShootEventArgs
     {

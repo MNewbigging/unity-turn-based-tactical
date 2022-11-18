@@ -85,26 +85,38 @@ public class EnemyAI : MonoBehaviour
 
   private bool TryTakeEnemyAIAction(Unit enemyUnit, Action onEnemyAIActionComplete)
   {
-    SpinAction spinAction = enemyUnit.GetSpinAction();
-
-    // Get grid position clicked
-    GridPosition actionGridPosition = enemyUnit.GetGridPosition();
-
-    // Continue only if clicked grid cell is valid for current action
-    if (!spinAction.IsValidActionGridPosition(actionGridPosition))
+    EnemyAIAction bestEnemyAIAction = null;
+    BaseAction bestBaseAction = null;
+    foreach (BaseAction baseAction in enemyUnit.GetBaseActions())
     {
-      return false;
+      if (!enemyUnit.CanSpendActionPointsToTakeAction(baseAction))
+      {
+        continue;
+      }
+
+      if (bestEnemyAIAction == null)
+      {
+        bestEnemyAIAction = baseAction.GetBestEnemyAIAction();
+        bestBaseAction = baseAction;
+      }
+      else
+      {
+        EnemyAIAction testEnemyAIAction = baseAction.GetBestEnemyAIAction();
+        if (testEnemyAIAction != null && testEnemyAIAction.actionValue > bestEnemyAIAction.actionValue)
+        {
+          bestEnemyAIAction = testEnemyAIAction;
+          bestBaseAction = baseAction;
+        }
+      }
     }
 
-    // Continue only if unit can afford to take that action
-    if (!enemyUnit.TrySpendActionPointsToTakeAction(spinAction))
+    if (bestEnemyAIAction != null && enemyUnit.TrySpendActionPointsToTakeAction(bestBaseAction))
     {
-      return false;
+      bestBaseAction.TakeAction(bestEnemyAIAction.gridPosition, onEnemyAIActionComplete);
+
+      return true;
     }
 
-    // Take the action
-    spinAction.TakeAction(actionGridPosition, onEnemyAIActionComplete);
-
-    return true;
+    return false;
   }
 }

@@ -19,6 +19,7 @@ public class GridSystemVisual : MonoBehaviour
     White,
     Blue,
     Red,
+    RedSoft,
     Yellow
   }
 
@@ -79,6 +80,33 @@ public class GridSystemVisual : MonoBehaviour
     }
   }
 
+  private void ShowGridPositionRange(GridPosition gridPosition, int range, GridVisualType gridVisualType)
+  {
+    List<GridPosition> gridPositionList = new List<GridPosition>();
+    for (int x = -range; x <= range; x++)
+    {
+      for (int z = -range; z <= range; z++)
+      {
+        GridPosition testGridPosition = gridPosition + new GridPosition(x, z);
+
+        if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition))
+        {
+          continue;
+        }
+
+        int testDistance = Mathf.Abs(x) + Mathf.Abs(z);
+        if (testDistance > range)
+        {
+          continue;
+        }
+
+        gridPositionList.Add(testGridPosition);
+      }
+    }
+
+    ShowGridPositionList(gridPositionList, gridVisualType);
+  }
+
   public void ShowGridPositionList(List<GridPosition> gridPositionList, GridVisualType gridVisualType)
   {
     foreach (GridPosition position in gridPositionList)
@@ -91,6 +119,7 @@ public class GridSystemVisual : MonoBehaviour
   public void UpdateGridVisual()
   {
     HideAllGridPositions();
+
 
     BaseAction selectedAction = UnitActionSystem.Instance.GetSelectedAction();
 
@@ -105,6 +134,9 @@ public class GridSystemVisual : MonoBehaviour
         break;
       case ShootAction shootAction:
         gridVisualType = GridVisualType.Red;
+
+        Unit unit = UnitActionSystem.Instance.GetSelectedUnit();
+        ShowGridPositionRange(unit.GetGridPosition(), shootAction.GetMaxShootDistance(), GridVisualType.RedSoft);
         break;
     }
 

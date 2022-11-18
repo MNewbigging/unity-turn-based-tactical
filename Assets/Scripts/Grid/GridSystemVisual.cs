@@ -6,7 +6,24 @@ using System;
 public class GridSystemVisual : MonoBehaviour
 {
   public static GridSystemVisual Instance { get; private set; }
+
+  [Serializable]
+  public struct GridVisualTypeMaterial
+  {
+    public GridVisualType gridVisualType;
+    public Material material;
+  }
+
+  public enum GridVisualType
+  {
+    White,
+    Blue,
+    Red,
+    Yellow
+  }
+
   [SerializeField] private Transform gridSystemVisualSinglePrefab;
+  [SerializeField] private List<GridVisualTypeMaterial> gridVisualTypeMaterialList;
 
   private GridSystemVisualSingle[,] gridSystemVisualSingleArray;
 
@@ -62,11 +79,12 @@ public class GridSystemVisual : MonoBehaviour
     }
   }
 
-  public void ShowGridPositionList(List<GridPosition> gridPositionList)
+  public void ShowGridPositionList(List<GridPosition> gridPositionList, GridVisualType gridVisualType)
   {
     foreach (GridPosition position in gridPositionList)
     {
-      gridSystemVisualSingleArray[position.x, position.z].Show();
+      gridSystemVisualSingleArray[position.x, position.z].
+        Show(GetGridVisualTypeMaterial(gridVisualType));
     }
   }
 
@@ -76,6 +94,34 @@ public class GridSystemVisual : MonoBehaviour
 
     BaseAction selectedAction = UnitActionSystem.Instance.GetSelectedAction();
 
-    ShowGridPositionList(selectedAction.GetValidActionGridPositionList());
+    GridVisualType gridVisualType = GridVisualType.White;
+    switch (selectedAction)
+    {
+      case MoveAction moveAction:
+        gridVisualType = GridVisualType.White;
+        break;
+      case SpinAction spinAction:
+        gridVisualType = GridVisualType.Blue;
+        break;
+      case ShootAction shootAction:
+        gridVisualType = GridVisualType.Red;
+        break;
+    }
+
+    ShowGridPositionList(selectedAction.GetValidActionGridPositionList(), gridVisualType);
+  }
+
+  private Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)
+  {
+    foreach (GridVisualTypeMaterial gridVisualTypeMaterial in gridVisualTypeMaterialList)
+    {
+      if (gridVisualTypeMaterial.gridVisualType == gridVisualType)
+      {
+        return gridVisualTypeMaterial.material;
+      }
+    }
+
+    Debug.LogError("Could not find grid visual type material for " + gridVisualType);
+    return null;
   }
 }

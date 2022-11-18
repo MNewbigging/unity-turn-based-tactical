@@ -1582,6 +1582,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridSystemVisualSinglePrefab: {fileID: 6328995471243728128, guid: 0eadaf669f277274a9d804e2701edeca,
     type: 3}
+  gridVisualTypeMaterialList:
+  - gridVisualType: 0
+    material: {fileID: 2100000, guid: efc843d5086aace44a5776d91de5d615, type: 2}
+  - gridVisualType: 1
+    material: {fileID: 2100000, guid: 7c88305cf0ae63d4099e0534f72351eb, type: 2}
+  - gridVisualType: 2
+    material: {fileID: 2100000, guid: d2a2416c98026104982e582e7069c204, type: 2}
+  - gridVisualType: 3
+    material: {fileID: 2100000, guid: 614358b708fb999479e935be88a67117, type: 2}
 --- !u!4 &1070835514
 Transform:
   m_ObjectHideFlags: 0
